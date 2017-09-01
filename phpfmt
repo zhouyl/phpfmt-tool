@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+php=`which php`
+
+fmtconf=$PWD/.phpfmt.ini
+dirconf=$PWD/.phpfmtdirs
+fmthome=$HOME/.phpfmt
+fmtphar=$fmthome/fmt.phar
+
+# url prefix for phpfmt & configuration download
+downurl="--no-check-certificate https://raw.githubusercontent.com/zhouyl/phpfmt-tool/master"
+
+# download file from the remote repository
+download() {
+    target=$(basename $1)
+    wget $downurl/$target -qO $1 &
+
+    echo -e "\033[0;34mwget $downurl/$target -qO $1\033[0m"
+
+    while [ true ]; do
+        n=$(ps aux | grep wget | grep "$1" | wc -l)
+        if [ $n = "0" ]; then
+            echo -ne " Done!\n\n"
+            break
+        else
+            echo -ne ">"
+            sleep 1
+        fi
+    done
+}
+
+if [ ! -d $fmthome ]; then
+    mkdir -p $fmthome
+fi
+
+if [ ! -f $fmtconf ]; then
+    fmtconf=$fmthome/.phpfmt.ini
+    echo "Use the global configuration file: $fmtconf"
+
+    if [ ! -f $fmtconf ]; then
+        echo "Download the global configuration file: $fmtconf ..."
+        download $fmtconf
+    fi
+else
+    echo "Use the custom configuration file: $fmtconf"
+fi
+
+if [ ! -f $fmtphar ]; then
+    echo "Download the phpfmt.phar: $fmtphar"
+    download $fmtphar
+fi
+
+# get the target directories
+if [ -f $dirconf ]; then
+    dirs=$(cat $dirconf)
+fi
+
+# check the php version
+ver=$($php -r "echo version_compare(PHP_VERSION, '5.6.0') >= 0 ? 'yes' : 'no';")
+if [ $ver != "yes" ]; then
+    echo -e "\033[0;41mPlease use php 5.6.0 or above version! ($php)\033[0m"
+    exit 0
+fi
+
+# check php dependent extensions
+ext=$($php -r "echo extension_loaded('pcntl') && extension_loaded('sysvsem') && extension_loaded('sysvshm') && extension_loaded('sysvmsg') ? 'yes' : 'no';")
+if [ $ext != "yes" ]; then
+    echo -e "\033[0;41mPlease recompile php and add configuration these parameters: --enable-sysvsem --enable-sysvshm --enable-sysvmsg --enable-pcntl\033[0m"
+    exit 0
+fi
+
+echo -e "\n\033[0;33m[Execute]\033[0m $php $fmtphar --config=$fmtconf $dirs $*\n"
+
+$php $fmtphar --config=$fmtconf $dirs $*
