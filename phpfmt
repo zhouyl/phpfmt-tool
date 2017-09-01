@@ -4,8 +4,8 @@ php=`which php`
 
 fmtconf=$PWD/.phpfmt.ini
 dirconf=$PWD/.phpfmtdirs
+fmtphar=$PWD/verndor/zhouyl/phpfmt-tool/fmt.phar
 fmthome=$HOME/.phpfmt
-fmtphar=$fmthome/fmt.phar
 
 # url prefix for phpfmt & configuration download
 downurl="--no-check-certificate https://raw.githubusercontent.com/zhouyl/phpfmt-tool/master"
@@ -46,8 +46,11 @@ else
 fi
 
 if [ ! -f $fmtphar ]; then
-    echo "Download the phpfmt.phar: $fmtphar"
-    download $fmtphar
+    fmtphar=$fmthome/fmt.phar
+    if [ ! -f $fmtphar ]; then
+        echo "Download the phpfmt.phar: $fmtphar"
+        download $fmtphar
+    fi
 fi
 
 # get the target directories

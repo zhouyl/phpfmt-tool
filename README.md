@@ -29,7 +29,7 @@ echo "./app ./bootstrap ./database" > ./.fmtdirs
 
 ```bash
 cd /workspace/myapplication
-vendor/bin/phpfmt .
+vendor/bin/phpfmt
 ```
 
 ## Global Installation
