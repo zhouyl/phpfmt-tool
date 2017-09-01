@@ -16,5 +16,6 @@
         "ext-sysvsem": "*",
         "ext-sysvshm": "*",
         "ext-sysvmsg": "*"
-    }
+    },
+    "bin": ["phpfmt"]
 }
