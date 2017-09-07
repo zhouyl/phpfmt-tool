@@ -22,7 +22,7 @@ cp vendor/zhouyl/phpfmt-tool/.phpfmt.ini .
 ### Customize the default formatting directories (e.g. laravel 5.x)
 
 ```bash
-echo "./app ./bootstrap ./database" > ./.fmtdirs
+echo "./app ./bootstrap ./database" > ./.phpfmtdirs
 ```
 
 ### Usage
